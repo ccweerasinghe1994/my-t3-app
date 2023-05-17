@@ -6,6 +6,8 @@ import type { RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
+import type { FC } from "react";
+import LoaderSpinner from "~/components/loader.component";
 
 dayjs.extend(relativeTime);
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
@@ -18,7 +20,7 @@ const PostView = (props: PostWithUser) => {
       key={post.id}
     >
       <Image
-        className="h-14 w-14 rounded-full"
+        className="h-10 w-10 rounded-full"
         src={author.profilePicture}
         alt=""
         width={56}
@@ -36,7 +38,7 @@ const PostView = (props: PostWithUser) => {
   );
 };
 
-const CreatePostWizard = () => {
+const CreatePostWizard: FC = () => {
   // user data
 
   const { user } = useUser();
@@ -47,9 +49,9 @@ const CreatePostWizard = () => {
   }
 
   return (
-    <div className="flex w-full gap-3 ">
+    <div className="flex w-full gap-3 pl-4 pt-4">
       <Image
-        className="h-14 w-14 rounded-full"
+        className="h-10 w-10 rounded-full"
         src={user.profileImageUrl}
         alt="profile image"
         width={56}
@@ -63,18 +65,31 @@ const CreatePostWizard = () => {
     </div>
   );
 };
-
-const Home: NextPage = () => {
-  const { data, isLoading } = api.post.getAll.useQuery();
-
-  if (isLoading) {
-    return <div className="animate-spin">Loading...</div>;
+const Feed = () => {
+  const { data, isLoading: postLoading } = api.post.getAll.useQuery();
+  if (postLoading) {
+    return <LoaderSpinner size={10} />;
   }
 
   // no data return empty
   if (!data) {
-    return <div>No data</div>;
+    return <div>Something went wrong</div>;
   }
+  return (
+    <div className="flex flex-col">
+      {data?.map(({ post, author }) => (
+        <PostView key={post.id} post={post} author={author} />
+      ))}
+    </div>
+  );
+};
+const Home: NextPage = () => {
+  const { isLoaded: userLoaded } = useUser();
+  api.post.getAll.useQuery();
+
+  if (!userLoaded) return <div />;
+
+  // no data return empty
 
   return (
     <>
@@ -90,11 +105,7 @@ const Home: NextPage = () => {
       <main className="flex h-screen justify-center">
         <div className="h-full w-full border-x border-slate-400  bg-opacity-30 md:max-w-2xl ">
           <CreatePostWizard />
-          <div className="flex flex-col">
-            {data?.map(({ post, author }) => (
-              <PostView key={post.id} post={post} author={author} />
-            ))}
-          </div>
+          <Feed />
         </div>
       </main>
     </>
