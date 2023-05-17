@@ -9,6 +9,7 @@ const filterUser = (user: User) => {
     id: user.id,
     username: user.username,
     profilePicture: user.profileImageUrl,
+    name: user.firstName,
   };
 };
 export const postRouter = createTRPCRouter({
@@ -24,7 +25,7 @@ export const postRouter = createTRPCRouter({
     return posts.map((post) => {
       const author = users.find((user) => user.id === post.authorId);
 
-      if (!author || !author.username) {
+      if (!author) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Author not found",
@@ -35,10 +36,12 @@ export const postRouter = createTRPCRouter({
         post,
         author: {
           id: author.id,
-          username: author.username,
+          username: author.username ? author.username : author.name,
           profilePicture: author.profilePicture,
         },
       };
     });
   }),
 });
+
+// user_2PueiPrz6FAhg0KhahFXUsHqIb3
