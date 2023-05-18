@@ -13,6 +13,7 @@ import {
   LoaderSpinner,
 } from "~/components/loader.component";
 import toast from "react-hot-toast";
+import Link from "next/link";
 dayjs.extend(relativeTime);
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
 
@@ -33,7 +34,11 @@ const PostView = (props: PostWithUser) => {
       <div className="flex flex-col">
         <div>
           <span>
-            @{author.username} · {dayjs(post.createdAt).fromNow()}
+            <Link href={`/@${author.username ?? ""}`}>@{author?.username}</Link>{" "}
+            ·{" "}
+            <Link href={`/posts/${post.id}`}>
+              {dayjs(post.createdAt).fromNow()}
+            </Link>
           </span>
         </div>
         <span className="text-xl">{post.content}</span>
