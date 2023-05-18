@@ -6,6 +6,7 @@ import type { RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
+import { useState } from "react";
 import type { FC } from "react";
 import LoaderSpinner from "~/components/loader.component";
 
@@ -40,16 +41,23 @@ const PostView = (props: PostWithUser) => {
 
 const CreatePostWizard: FC = () => {
   // user data
-
+  const [input, setInput] = useState("");
   const { user } = useUser();
-
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.post.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.post.getAll.invalidate();
+    },
+  });
   // if user is not logged in
+
   if (!user) {
     return null;
   }
 
   return (
-    <div className="flex w-full gap-3 pl-4 pt-4">
+    <div className="flex w-full gap-3 px-4 pt-4">
       <Image
         className="h-10 w-10 rounded-full"
         src={user.profileImageUrl}
@@ -61,7 +69,19 @@ const CreatePostWizard: FC = () => {
         type="text"
         placeholder="type some emojis"
         className="grow bg-transparent outline-none"
+        onChange={(e) => setInput(e.target.value)}
+        value={input}
+        disabled={isPosting}
       />
+      <button
+        onClick={() => {
+          mutate({
+            content: input,
+          });
+        }}
+      >
+        Post
+      </button>
     </div>
   );
 };
