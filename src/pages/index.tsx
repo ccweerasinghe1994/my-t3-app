@@ -81,6 +81,15 @@ const CreatePostWizard: FC = () => {
         height={56}
       />
       <input
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            if (input === "") return;
+            mutate({
+              content: input,
+            });
+          }
+        }}
         type="text"
         placeholder="type some emojis"
         className="grow bg-transparent outline-none"
