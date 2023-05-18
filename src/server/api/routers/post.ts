@@ -1,5 +1,4 @@
 import { clerkClient } from "@clerk/nextjs";
-import type { User } from "@clerk/nextjs/dist/server";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
@@ -9,14 +8,7 @@ import {
   privateProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-const filterUser = (user: User) => {
-  return {
-    id: user.id,
-    username: user.username,
-    profilePicture: user.profileImageUrl,
-    name: user.firstName,
-  };
-};
+import { filterUser } from "~/server/helpers/filterUserForTheClient";
 
 // Create a new ratelimiter, that allows 10 requests per 10 seconds
 const ratelimit = new Ratelimit({
@@ -67,7 +59,11 @@ export const postRouter = createTRPCRouter({
   create: privateProcedure
     .input(
       z.object({
-        content: z.string().emoji("only emojis are allowed 😁😁😁").min(1).max(1000),
+        content: z
+          .string()
+          .emoji("only emojis are allowed 😁😁😁")
+          .min(1)
+          .max(1000),
       })
     )
     .mutation(async ({ ctx, input }) => {

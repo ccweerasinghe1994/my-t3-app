@@ -33,7 +33,7 @@ export const LoaderSpinner: FC<LoaderSpinnerProps> = ({ size }) => {
 export const LoaderSpinnerPage: FC<LoaderSpinnerProps> = ({ size }) => {
   return (
     <div className="absolute left-0 top-0 flex h-screen w-screen items-center justify-center">
-      <LoaderSpinner size={10} />
+      <LoaderSpinner size={size} />
     </div>
   );
 };
