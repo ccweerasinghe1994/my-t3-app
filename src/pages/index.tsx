@@ -51,7 +51,7 @@ const CreatePostWizard: FC = () => {
   }
 
   return (
-    <div className="flex w-full gap-3 pl-4 pt-4">
+    <div className="flex w-full gap-3 px-4 pt-4">
       <Image
         className="h-10 w-10 rounded-full"
         src={user.profileImageUrl}
@@ -74,7 +74,7 @@ const CreatePostWizard: FC = () => {
           setInput("");
         }}
       >
-        submit
+        Post
       </button>
     </div>
   );
