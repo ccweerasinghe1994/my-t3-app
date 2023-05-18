@@ -43,7 +43,13 @@ const CreatePostWizard: FC = () => {
   // user data
   const [input, setInput] = useState("");
   const { user } = useUser();
-  const { mutate } = api.post.create.useMutation();
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.post.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.post.getAll.invalidate();
+    },
+  });
   // if user is not logged in
 
   if (!user) {
@@ -65,13 +71,13 @@ const CreatePostWizard: FC = () => {
         className="grow bg-transparent outline-none"
         onChange={(e) => setInput(e.target.value)}
         value={input}
+        disabled={isPosting}
       />
       <button
         onClick={() => {
           mutate({
             content: input,
           });
-          setInput("");
         }}
       >
         Post
