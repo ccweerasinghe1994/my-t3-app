@@ -8,8 +8,11 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import { useState } from "react";
 import type { FC } from "react";
-import LoaderSpinner from "~/components/loader.component";
-
+import {
+  LoaderSpinnerPage,
+  LoaderSpinner,
+} from "~/components/loader.component";
+import toast from "react-hot-toast";
 dayjs.extend(relativeTime);
 type PostWithUser = RouterOutputs["post"]["getAll"][number];
 
@@ -49,6 +52,18 @@ const CreatePostWizard: FC = () => {
       setInput("");
       void ctx.post.getAll.invalidate();
     },
+    onError: (err) => {
+      const error = err.data?.zodError?.fieldErrors?.content;
+      const otherError = err.message;
+
+      if (error && error[0]) {
+        toast.error(error[0]);
+        return;
+      }
+      if (otherError) {
+        toast.error(otherError);
+      }
+    },
   });
   // if user is not logged in
 
@@ -73,22 +88,30 @@ const CreatePostWizard: FC = () => {
         value={input}
         disabled={isPosting}
       />
-      <button
-        onClick={() => {
-          mutate({
-            content: input,
-          });
-        }}
-      >
-        Post
-      </button>
+      {input !== "" && !isPosting && (
+        <button
+          disabled={isPosting}
+          onClick={() => {
+            mutate({
+              content: input,
+            });
+          }}
+        >
+          Post
+        </button>
+      )}
+      {isPosting && (
+        <div className="flex items-center justify-center ">
+          <LoaderSpinner size={20} />
+        </div>
+      )}
     </div>
   );
 };
 const Feed = () => {
   const { data, isLoading: postLoading } = api.post.getAll.useQuery();
   if (postLoading) {
-    return <LoaderSpinner size={10} />;
+    return <LoaderSpinnerPage size={10} />;
   }
 
   // no data return empty
