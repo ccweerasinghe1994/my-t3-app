@@ -4,7 +4,6 @@ import { LoaderSpinnerPage } from "~/components/loader.component";
 import { api } from "~/utils/api";
 
 const ProfilePage: NextPage = () => {
-  // no data return empty
   const { data, isLoading } = api.profile.getUserByUserName.useQuery({
     emailAddress: "ccweerasinghe1994@gmail.com",
   });
@@ -25,7 +24,7 @@ const ProfilePage: NextPage = () => {
         <meta name="description" content="🐥" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex flex-col items-center gap-4 border-2">
+      <main className="flex flex-col items-center gap-4 ">
         <div>
           <span>Name: </span>
           {data.name}
@@ -36,7 +35,6 @@ const ProfilePage: NextPage = () => {
           {data.id}
         </div>
         <div>
-          {" "}
           <span>Email: </span>
           {data.email?.emailAddress}
         </div>
